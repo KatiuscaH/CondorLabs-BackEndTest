@@ -18,48 +18,45 @@ exports.create = (req, res) => {
 
     console.log(req.body)
     provider.save((err, providerStored) => {
-        if(err) res.status(500).send({message: `Error to save: ${err}`})
+        if (err) res.status(500).send({ message: `Error to save: ${err}` })
 
-        res.status(200).send({provider: providerStored})
+        res.status(200).send({ provider: providerStored })
     })
 };
 
 // List all providers from the database.
 exports.findAll = (req, res) => {
-    console.log("jj");
-
     Provider.find()
-    .then(providers => {
-       console.log("jj2"); res.send(providers);
-    }).catch(err => {
-        res.status(500).send({
-            message: err.message || "Some error occurred while retrieving notes."
+        .then(providers => {
+        }).catch(err => {
+            res.status(500).send({
+                message: err.message || "Error."
+            });
         });
-    });
 };
 
 // Find a single provider with a Id
 exports.findOne = (req, res) => {
-   
+
     Provider.findById(req.params.providersId)
-    .then(providers => {
-        if(!providers) {
-            return res.status(404).send({
-                message: "Provider not found with id " + req.params.providersId
-            });            
-        }
-        res.send(providers);
-        
-    }).catch(err => {
-        if(err.kind === 'ObjectId') {
-            return res.status(404).send({
-                message: "Provider not found with id " + req.params.providersId
-            });                
-        }
-        return res.status(500).send({
-            message: "Error retrieving provider with id " + req.params.providersId
+        .then(providers => {
+            if (!providers) {
+                return res.status(404).send({
+                    message: "Provider not found with id " + req.params.providersId
+                });
+            }
+            res.send(providers);
+
+        }).catch(err => {
+            if (err.kind === 'ObjectId') {
+                return res.status(404).send({
+                    message: "Provider not found with id " + req.params.providersId
+                });
+            }
+            return res.status(500).send({
+                message: "Error retrieving provider with id " + req.params.providersId
+            });
         });
-    });
 };
 
 // Update a provider identified by the Id 
@@ -67,7 +64,7 @@ exports.update = (req, res) => {
     let providersId = req.params.providersId
     let update = req.body
     Provider.findByIdAndUpdate(providersId, update, (err, providerUpdate) => {
-        if (err) res.status(500).send({message: "Error to update"})
+        if (err) res.status(500).send({ message: "Error to update" })
 
         res.status(200).send({ provider: providerUpdate })
     })
@@ -76,22 +73,22 @@ exports.update = (req, res) => {
 // Delete a provider by the id
 exports.delete = (req, res) => {
     Provider.findByIdAndRemove(req.params.providersId)
-    .then(providers => {
-        if(!providers) {
-            return res.status(404).send({
-                message: "Provider not found with id " + req.params.providersId
+        .then(providers => {
+            if (!providers) {
+                return res.status(404).send({
+                    message: "Provider not found with id " + req.params.providersId
+                });
+            }
+            res.send({ message: "Delete successfully!" });
+        }).catch(err => {
+            if (err.kind === 'ObjectId' || err.name === 'NotFound') {
+                return res.status(404).send({
+                    message: "Provider not found with id " + req.params.providersId
+                });
+            }
+            return res.status(500).send({
+                message: "Could not delete provider with id " + req.params.providersId
             });
-        }
-        res.send({message: "Note deleted successfully!"});
-    }).catch(err => {
-        if(err.kind === 'ObjectId' || err.name === 'NotFound') {
-            return res.status(404).send({
-                message: "Note not found with id " + req.params.providersId
-            });                
-        }
-        return res.status(500).send({
-            message: "Could not delete note with id " + req.params.providersId
         });
-    });
 
 };
